@@ -2,6 +2,9 @@ package com.examplewebsocket.websockets.service;
 
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,8 @@ public class ChatHandler extends TextWebSocketHandler {
     @Autowired
     private OpenIAService openIAService;
 
+    private final Map<String, Long> sessionLastRequestTime = new ConcurrentHashMap<>();
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.add(session);
@@ -38,25 +43,46 @@ public class ChatHandler extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message){
 
         String userMessage = message.getPayload();
+        String aiResponse;
 
-        // Llama al servicio para obtener una respuesta de GPT personalizado
-        String aiResponse = openIAService.getCustomGPTResponse(userMessage);
+        long currentTime = System.currentTimeMillis();
+        long lastRequestTime = sessionLastRequestTime.getOrDefault(session.getId(), 0L);
 
-        try {
-            // Envía la respuesta de la IA de vuelta al usuario
-            session.sendMessage(new TextMessage("IA: " + aiResponse));
-        } catch (IOException e) {
-            LOGGER.error("Error enviando el mensaje de respuesta de IA", e);
+
+        if (currentTime - lastRequestTime < TimeUnit.SECONDS.toMillis(5)) {
+
+            aiResponse = "Por favor, espera unos segundos antes de enviar otro mensaje.";
+
+        } else {
+            
+            sessionLastRequestTime.put(session.getId(), currentTime);
+
+            try {
+                aiResponse = openIAService.getCustomGPTResponse(userMessage);
+            } catch (Exception e) {
+                System.err.println("Error al obtener respuesta de OpenAI: " + e.getMessage());
+                e.printStackTrace();
+                aiResponse = "Error en la respuesta de la IA. Por favor, inténtalo más tarde.";
+            }
         }
 
-        // for (WebSocketSession webSocketSession : sessions) {
-        //     try {
-        //         webSocketSession.sendMessage(message);
-        //         LOGGER.info("Mensaje recibido del cliente: " + message);
+        try {
+            session.sendMessage(new TextMessage(aiResponse));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        //     } catch (IOException e) {
-        //         LOGGER.error(e.getMessage(), e);
-        //     }
-        // }
+        // // for (WebSocketSession webSocketSession : sessions) {
+        // //     try {
+        // //         webSocketSession.sendMessage(message);
+        // //         LOGGER.info("Mensaje recibido del cliente: " + message);
+
+        // //     } catch (IOException e) {
+        // //         LOGGER.error(e.getMessage(), e);
+        // //     }
+        // // }
     }
+
+        
 }
+
