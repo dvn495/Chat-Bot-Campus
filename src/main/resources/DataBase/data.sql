@@ -1,0 +1,2 @@
+-- SQLBook: Code
+INSERT INTO usuarios (nombre, telefono) VALUES('Juan Pérez', 123456789),('María González', 234567890),('Carlos Rodríguez', 345678901),('Laura Martínez', 456789012),('Miguel Sánchez', 567890123),('Ana López', 678901234),('Luis García', 789012345),('Sofía Fernández', 890123456),('Pedro Hernández', 901234567),('Elena Ruiz', 123890123);

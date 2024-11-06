@@ -1,7 +1,11 @@
 package com.examplewebsocket.websockets.service;
 
 import java.util.Map;
+import java.nio.file.Paths;
 import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 
 @Service
 public class OpenIAService {
@@ -24,11 +29,24 @@ public class OpenIAService {
     @Value("${openai.model.id}")
     private String modelId;
 
+    private String document;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final Map<String, String> responseCache = new java.util.concurrent.ConcurrentHashMap<>();
 
+    public OpenIAService() {
+        try{
+            Path filePath = Paths.get("src/main/resources/docs/Preguntas frecuentes.txt");
+            document = Files.readString(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            document = "No se pudo cargar el documento";
+        }
+    }
 
     public String getCustomGPTResponse(String userMessage) {
+
+
 
         if (responseCache.containsKey(userMessage)) {
             return responseCache.get(userMessage);
@@ -38,15 +56,15 @@ public class OpenIAService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
+
         Map<String, Object> body = Map.of(
             "model", modelId,  
             "messages", List.of(
-                Map.of("role", "system", "content", "Eres Campi, un asistente amigable que ayuda a entender Campuslands. Responde de forma cálida y detallada, pero sin mencionar otras instituciones educativas o comparaciones."),
+                Map.of("role", "system", "content", "Eres Campi, un asistente amigable que ayuda a entender Campuslands. Responde de forma cálida y detallada, pero sin mencionar otras instituciones educativas o comparaciones, ademas de esto usa la siguiente informacion para responder cualquier pregunta." + document),
                 Map.of("role", "user", "content", userMessage)
             ),
-            "max_tokens", 100, 
-            "temperature", 0.7,
-            "return_likelihoods", "NONE"
+            "max_tokens", 200, 
+            "temperature", 0.7
         );
 
 
@@ -59,12 +77,9 @@ public class OpenIAService {
                 String.class
             ).getBody();
             
-            
-            String cohereResponse = parseResponse(response);
-            responseCache.put(userMessage, cohereResponse);
-            // responseCache.put(userMessage, response);
-            // return response;
-            return cohereResponse;
+            String IAResponse = parseResponse(response);
+            responseCache.put(userMessage, IAResponse);
+            return IAResponse;
         } catch (Exception e) {
             System.err.println("Error al obtener respuesta de OpenAI: " + e.getMessage());
             e.printStackTrace();    
@@ -76,9 +91,12 @@ public class OpenIAService {
     private String parseResponse(String response) {
         try {
             org.json.JSONObject jsonResponse = new org.json.JSONObject(response);
-            return jsonResponse.getString("text");
+            return jsonResponse.getJSONArray("choices")
+                           .getJSONObject(0)
+                           .getJSONObject("message")
+                           .getString("content");
         } catch (Exception e) {
-            System.err.println("Error al parsear respuesta de Cohere: " + e.getMessage());
+            System.err.println("Error al parsear respuesta de Chat GPT: " + e.getMessage());
             return "Error en la respuesta de la IA. Inténtalo más tarde.";
         }
     }
