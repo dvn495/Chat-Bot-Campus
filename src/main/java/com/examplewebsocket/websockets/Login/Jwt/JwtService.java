@@ -46,9 +46,25 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
+<<<<<<< HEAD
+        final String username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+    
+
+    public boolean isTokenValid(String token) {
+        try {
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false; 
+        }
+    }
+    
+=======
         final String username=getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername())&& !isTokenExpired(token));
     }
+>>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
 
     private Claims getAllClaims(String token){
 
