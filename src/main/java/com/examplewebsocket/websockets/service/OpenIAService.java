@@ -60,11 +60,11 @@ public class OpenIAService {
         Map<String, Object> body = Map.of(
             "model", modelId,  
             "messages", List.of(
-                Map.of("role", "system", "content", "Eres Campi, un asistente amigable que ayuda a entender Campuslands. Responde de forma cálida y detallada, pero sin mencionar otras instituciones educativas o comparaciones, ademas de esto usa la siguiente informacion para responder cualquier pregunta." + document),
+                Map.of("role", "system", "content", "Eres Campi, un asistente amigable que ayuda a entender Campuslands. Responde de forma cálida y detallada, lo mas consiso con un maximo de 100 tokens, pero sin mencionar otras instituciones educativas o comparaciones, responde con emojis, ademas de esto usa la siguiente informacion para responder cualquier pregunta." + document),
                 Map.of("role", "user", "content", userMessage)
             ),
-            "max_tokens", 200, 
-            "temperature", 0.7
+            "max_tokens", 150, 
+            "temperature", 0.2
         );
 
 

@@ -79,3 +79,14 @@
 20. ¿Qué tipo de trabajos puedo obtener al graduarme de Campuslands?
 
 	•	Respuesta: Al finalizar el programa, estarás capacitado para roles como desarrollador de software, analista de datos, soporte técnico y otros puestos demandados en tecnología. Campuslands te abre las puertas a empleos que no solo ofrecen buenas remuneraciones, sino también oportunidades de crecimiento y desarrollo en un sector en constante expansión.
+
+21. ¿Que titulo se obtiene al salir de campuslands?
+
+	•	Respuesta: Al graduarte de Campuslands, recibirás un certificado oficial de Técnico Laboral en Desarrollo de Software, respaldado por la Secretaría de Educación. Este título te posiciona como un profesional preparado para afrontar los retos del sector tecnológico, con conocimientos en programación, inglés y habilidades interpersonales que te abren puertas a oportunidades laborales de calidad.
+
+22. ¿Que lenguajes de programacion/temas/materias se aprenden en Campuslands?
+
+	•	Respuesta: En Campuslands, actualmente puedes elegir entre dos rutas de aprendizaje: la **ruta Java**, donde aprenderás **Python, HTML, CSS, MySQL, Java y Spring Boot**, y la **ruta Node**, que incluye **Python, HTML, CSS, MySQL, Node.js y Express**. Además, ambas rutas se complementan con clases de **inglés** y desarrollo de **habilidades socioemocionales** para que te formes como un profesional integral y preparado para el mercado laboral.
+
+	
+

@@ -23,7 +23,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
             .setAllowedOrigins("*")
             .addInterceptors(new HttpSessionHandshakeInterceptor());;
 =======
+<<<<<<< HEAD
+        registry.addHandler(chatHandler, "/chat")
+            .setAllowedOrigins("*")
+            .addInterceptors(new HttpSessionHandshakeInterceptor());;
+=======
         registry.addHandler(chatHandler, "/chat").setAllowedOrigins("*");
 >>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
+>>>>>>> 8a9943e32de06103e4514bfa4ac1298625bee770
     }
 }

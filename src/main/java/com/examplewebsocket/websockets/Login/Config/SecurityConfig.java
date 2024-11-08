@@ -36,6 +36,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(authRequest ->
               authRequest
                     .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/chat").permitAll()
+                    .requestMatchers("/user/**").permitAll()
+=======
+<<<<<<< HEAD
+                csrf    
+                .disable())
+            .authorizeHttpRequests(authRequest ->
+              authRequest
+                    .requestMatchers("/auth/**").permitAll()
                     .anyRequest().authenticated()
 =======
                 csrf
@@ -45,6 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
 >>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
+>>>>>>> 8a9943e32de06103e4514bfa4ac1298625bee770
                 )
             .sessionManagement(sessionManager->
                 sessionManager 

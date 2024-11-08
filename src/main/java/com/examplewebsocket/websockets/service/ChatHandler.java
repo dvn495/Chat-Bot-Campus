@@ -10,6 +10,7 @@ import java.net.URI;
 =======
 >>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class ChatHandler extends TextWebSocketHandler {
     @Autowired
     private OpenIAService openIAService;
 
-    private final Map<String, Long> sessionLastRequestTime = new ConcurrentHashMap<>();
+    private final Map<String, Long> sessionLastRequestTime = new ConcurrentHashMap<>(); 
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -62,38 +63,51 @@ public class ChatHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message){
-
-        String userMessage = message.getPayload();
+    public void handleTextMessage(WebSocketSession session, TextMessage message) {
         String aiResponse;
-
         long currentTime = System.currentTimeMillis();
         long lastRequestTime = sessionLastRequestTime.getOrDefault(session.getId(), 0L);
 
-
-        if (currentTime - lastRequestTime < TimeUnit.SECONDS.toMillis(5)) {
-
-            aiResponse = "Por favor, espera unos segundos antes de enviar otro mensaje.";
-
-        } else {
-            
-            sessionLastRequestTime.put(session.getId(), currentTime);
+        try {
+            String payload = message.getPayload();
+            JSONObject jsonMessage;
 
             try {
-                aiResponse = openIAService.getCustomGPTResponse(userMessage);
+                jsonMessage = new JSONObject(payload);
             } catch (Exception e) {
-                System.err.println("Error al obtener respuesta de OpenAI: " + e.getMessage());
-                e.printStackTrace();
-                aiResponse = "Error en la respuesta de la IA. Por favor, inténtalo más tarde.";
+                // Manejo de error si el payload no es un JSON válido
+                session.sendMessage(new TextMessage("El formato del mensaje no es válido. Debe ser un JSON con el campo 'message'."));
+                return;
             }
-        }
 
-        try {
+            if (currentTime - lastRequestTime < TimeUnit.SECONDS.toMillis(5)) {
+                aiResponse = "Por favor, espera unos segundos antes de enviar otro mensaje.";
+            } else {
+                sessionLastRequestTime.put(session.getId(), currentTime);
+
+                try {
+                    String userMessage = jsonMessage.getString("message");
+                    aiResponse = openIAService.getCustomGPTResponse(userMessage);
+                } catch (Exception e) {
+                    LOGGER.error("Error al obtener respuesta de OpenAI: " + e.getMessage(), e);
+                    aiResponse = "Error en la respuesta de la IA. Por favor, inténtalo más tarde.";
+                }
+            }
+
             session.sendMessage(new TextMessage(aiResponse));
+
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error al enviar mensaje: " + e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.error("Error general en el manejo del mensaje: " + e.getMessage(), e);
         }
 
+
+
+        // // for (WebSocketSession webSocketSession : sessions) {
+        // //     try {
+        // //         webSocketSession.sendMessage(message);
+        // //         LOGGER.info("Mensaje recibido del cliente: " + message);
         // // for (WebSocketSession webSocketSession : sessions) {
         // //     try {
         // //         webSocketSession.sendMessage(message);
