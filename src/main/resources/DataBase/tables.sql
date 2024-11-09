@@ -1,7 +1,12 @@
--- SQLBook: Code
 create database if not exists chatBot;
 
 use chatBot;
+
+create table if not exists mensajes(
+	id int primary key auto_increment,
+    contenido text not null,
+    hora_mensaje time not null
+);
 
 create table if not exists usuarios(
 	id int primary key auto_increment,
@@ -17,11 +22,5 @@ create table if not exists chats(
     foreign key(id_usuario)references usuarios(id)
 );
 
-create table if not exists mensajes(
-	id int primary key auto_increment,
-    id_chat int not null,
-    hora_mensaje time not null,
-    foreign key(id_chat) references chats(id)
-);
 
 show tables;
