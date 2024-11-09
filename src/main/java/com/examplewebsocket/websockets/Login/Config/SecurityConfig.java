@@ -27,10 +27,9 @@ public class SecurityConfig {
     private final AuthenticationProvider authProvider;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(csrf -> 
-<<<<<<< HEAD
                 csrf    
                 .disable())
             .authorizeHttpRequests(authRequest ->
@@ -38,25 +37,8 @@ public class SecurityConfig {
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/chat").permitAll()
                     .requestMatchers("/user/**").permitAll()
-=======
-<<<<<<< HEAD
-                csrf    
-                .disable())
-            .authorizeHttpRequests(authRequest ->
-              authRequest
-                    .requestMatchers("/auth/**").permitAll()
-                    .anyRequest().authenticated()
-=======
-                csrf
-                .disable())
-            .authorizeHttpRequests(authRequest ->
-              authRequest
-                .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
->>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
->>>>>>> 8a9943e32de06103e4514bfa4ac1298625bee770
                 )
-            .sessionManagement(sessionManager->
+            .sessionManagement(sessionManager ->
                 sessionManager 
                   .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authProvider)
@@ -66,6 +48,7 @@ public class SecurityConfig {
             )
             .build();   
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -78,6 +61,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }

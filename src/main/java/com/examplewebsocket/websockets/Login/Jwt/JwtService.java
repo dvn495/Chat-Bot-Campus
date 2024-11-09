@@ -25,19 +25,19 @@ public class JwtService {
         return getToken(new HashMap<>(), user);
     }
 
-    private String getToken(Map<String,Object> extraClaims, UserDetails user) { 
+    private String getToken(Map<String, Object> extraClaims, UserDetails user) { 
         return Jwts
             .builder()
             .setClaims(extraClaims)
             .setSubject(user.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
             .signWith(getKey(), SignatureAlgorithm.HS256)
             .compact();
     }
 
     private Key getKey() {
-       byte[] keyBytes=Decoders.BASE64.decode(SECRET_KEY);
+       byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
        return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -46,11 +46,9 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-<<<<<<< HEAD
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    
 
     public boolean isTokenValid(String token) {
         try {
@@ -59,31 +57,8 @@ public class JwtService {
             return false; 
         }
     }
-    
-=======
-<<<<<<< HEAD
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-    
 
-    public boolean isTokenValid(String token) {
-        try {
-            return !isTokenExpired(token);
-        } catch (Exception e) {
-            return false; 
-        }
-    }
-    
-=======
-        final String username=getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername())&& !isTokenExpired(token));
-    }
->>>>>>> 917286f8dd3028398fe48ee3000059dd55494f32
->>>>>>> 8a9943e32de06103e4514bfa4ac1298625bee770
-
-    private Claims getAllClaims(String token){
-
+    private Claims getAllClaims(String token) {
         if (token == null || token.trim().isEmpty()) {
             System.err.println("Received an empty or null token.");
             throw new IllegalArgumentException("Token is null or empty");
@@ -102,20 +77,16 @@ public class JwtService {
         }
     }
 
-    public <T> T getClaim(String token, Function<Claims,T> claimsResolver)
-    {
-        final Claims claims=getAllClaims(token);
+    public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    private Date getExpiration(String token)
-    {
+    private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
     }
 
-    private boolean isTokenExpired(String token)
-    {
+    private boolean isTokenExpired(String token) {
         return getExpiration(token).before(new Date());
     }
-    
 }
